@@ -263,7 +263,7 @@ export default {
       return {
          items: [
             { title: 'Item 1', description: 'Description for Item 1' },
-            { title: 'Item 2', description: 'Description for Item 2' },
+            { title: 'Item 2', description: 'Description for Item 2 ' },
             { title: 'Item 3', description: 'Description for Item 3' },
          ],
          selectedItem: null,
