@@ -798,3 +798,619 @@ li {
 }
 </style>
 ```
+
+____________
+____________
+____________
+
+
+
+________________________
+# 6 Двусторонняя привязка данных к инпутам в Vue:
+_______________________________
+
+# Домашнее задание:
+
+### Задача 1
+
+На странице есть список элементов с ценами.\
+Рядом с каждым элементом находится чекбокс. \
+Необходимо реализовать подсчет суммы выбранных элементов из списка и вывод этой суммы на страницу.
+
+#### Решение
+
+```vue
+<template>
+  <div>
+    <div v-for="(item, index) in items" :key="index">
+      <input type="checkbox" v-model="selectedItems" :value="item.price">
+      {{ item.name }}: ${{ item.price }}
+    </div>
+    <p>Total: ${{ total }}</p>
+  </div>
+</template>
+<script>
+export default {
+  data() {
+    return {
+      items: [
+        { name: 'Item 1', price: 10 },
+        { name: 'Item 2', price: 20 },
+        { name: 'Item 3', price: 30 },
+        { name: 'Item 4', price: 40 }
+      ],
+      selectedItems: []
+    }
+  },
+  computed: {
+    total() {
+      return this.selectedItems.reduce((sum, price) => sum + Number(price), 0)
+    }
+  }
+}
+</script>
+```
+
+### Задача 2
+
+На странице есть форма отправки сообщения. \
+Поля формы - имя, email и сообщение.\
+Необходимо реализовать валидацию полей формы и отправку данных на сервер.
+
+#### Решение
+
+```vue
+<template>
+  <div>
+    <form @submit.prevent="submitForm">
+      <label>
+        Name:
+        <input type="text" v-model="name">
+        <div v-if="!nameValid">Введите ваше имя</div>
+      </label>
+      <label>
+        Email:
+        <input type="email" v-model="email">
+        <div v-if="!emailValid">Введите адрес электронной почты</div>
+      </label>
+      <label>
+        Message:
+        <textarea v-model="message"></textarea>
+        <div v-if="!messageValid">Введите ваше сообщение</div>
+      </label>
+      <button :disabled="!formValid">Ок</button>
+    </form>
+    <p v-if="formSubmitted">Сообщение отправлено</p>
+  </div>
+</template>
+<script>
+export default {
+  data() {
+    return {
+      name: '',
+      email: '',
+      message: '',
+      formSubmitted: false
+    }
+  },
+  computed: {
+    nameValid() {
+      // Поле "name" не должно быть пустым
+      return this.name !== ''
+    },
+    emailValid() {
+      // Проверка валидности email
+      const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/
+      return emailRegex.test(this.email)
+    },
+    messageValid() {
+      // Поле "message" не должно быть пустым
+      return this.message !== ''
+    },
+    formValid() {
+      // Все поля формы должны быть валидными
+      return this.nameValid && this.emailValid && this.messageValid
+    }
+  },
+  methods: {
+    submitForm() {
+      // Отправка данных на сервер
+      // В данном случае мы просто выводим сообщение о том, что форма отправлена
+      this.formSubmitted = true
+      // Сброс значений полей формы
+      this.name = ''
+      this.email = ''
+      this.message = ''
+    }
+  }
+}
+</script>
+```
+
+### Задача 3
+
+На странице есть форма заказа товара. \
+Каждый товар имеет свой список опций, которые можно выбирать.\
+Необходимо реализовать динамический список опций для каждого товара и отправку данных на сервер при нажатии на кнопку.
+
+#### Решение
+
+```vue
+<template>
+  <div>
+    <div v-for="(product, index) in products" :key="index">
+      <h3>{{ product.name }}</h3>
+      <p>Цена: {{ product.price }}</p>
+      <label v-for="(option, optionIndex) in product.options" :key="optionIndex">
+        <input type="checkbox" v-model="product.selectedOptions" :value="option">
+        {{ option }}
+      </label>
+    </div>
+    <button @click="submitForm">Оформить заказ</button>
+  </div>
+</template>
+<script>
+export default {
+  data() {
+    return {
+      products: [
+        {
+          name: 'Товар 1',
+          price: 100,
+          options: ['Опция 1', 'Опция 2', 'Опция 3'],
+          selectedOptions: []
+        },
+        {
+          name: 'Товар 2',
+          price: 200,
+          options: ['Опция 4', 'Опция 5', 'Опция 6'],
+          selectedOptions: []
+        },
+        {
+          name: 'Товар 3',
+          price: 300,
+          options: ['Опция 7', 'Опция 8', 'Опция 9'],
+          selectedOptions: []
+        }
+      ]
+    }
+  },
+  methods: {
+    submitForm() {
+      const formData = {
+        products: this.products.map((product) => {
+          return {
+            name: product.name,
+            price: product.price,
+            options: product.selectedOptions
+          }
+        })
+      }
+      console.log(formData) // отправка данных на сервер
+    }
+  }
+}
+</script>
+
+```
+
+### Задача 4
+
+На странице есть форма регистрации с полями ввода имени, электронной почты и пароля. \
+Необходимо реализовать валидацию полей формы и блокировку кнопки Submit, если поля формы не заполнены или заполнены некорректно.
+
+#### Решение
+
+```vue
+<template>
+  <div>
+    <label for="name">Name:</label>
+    <input type="text" id="name" v-model="name">
+    <p v-if="!nameValid" class="error">Enter valid name</p>
+    <label for="email">Email:</label>
+    <input type="email" id="email" v-model="email">
+    <p v-if="!emailValid" class="error">Enter valid email</p>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" v-model="password">
+    <p v-if="!passwordValid" class="error">Password must be at least 6 characters long</p>
+
+    <button :disabled="!formValid" @click="submitForm">Submit</button>
+  </div>
+</template>
+<script>
+export default {
+  data() {
+    return {
+      name: '',
+      email: '',
+      password: '',
+    };
+  },
+  computed: {
+    nameValid() {
+      return /^[a-zA-Z]+$/.test(this.name);
+    },
+    emailValid() {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email);
+    },
+    passwordValid() {
+      return this.password.length >= 6;
+    },
+    formValid() {
+      return this.nameValid && this.emailValid && this.passwordValid;
+    },
+  },
+  methods: {
+    submitForm() {
+      // submit form data to server
+      console.log('Submit data form ');
+    },
+  },
+};
+</script>
+<style>
+.error {
+  color: red;
+}
+</style>
+```
+____________
+____________
+____________
+
+
+
+________________________
+# 7 Расширенная работа с компонентами
+_______________________________
+
+# Домашнее задание:
+
+### Задача 1
+
+Необходимо разработать компонент "Чеклист" на Vue.js. Компонент должен представлять собой список задач, каждая из которых имеет возможность отмечаться как выполненная и удаляться. Также должна быть возможность добавления новых задач.
+
+#### Решение
+
+
+src/components/ChecklistComponent.vue
+
+```vue
+<template>
+  <div>
+    <h1>{{ title }}</h1>
+    <ul>
+      <checklist-item
+        v-for="(item, index) in items"
+        :key="index"
+        :item="item"
+        @toggle="toggleItem(index)"
+        @delete="deleteItem(index)"
+      ></checklist-item>
+    </ul>
+    <new-item-form @add="addItem"></new-item-form>
+  </div>
+</template>
+
+<script>
+import ChecklistItem from './ChecklistItem.vue'
+import NewItemForm from './NewItemForm.vue'
+
+export default {
+  name: 'ChecklistComponent',
+  components: {
+    ChecklistItem,
+    NewItemForm
+  },
+  data() {
+    return {
+      title: 'My Checklist',
+      items: [
+        { text: 'Task 1', done: false },
+        { text: 'Task 2', done: false },
+        { text: 'Task 3', done: false },
+      ]
+    }
+  },
+  methods: {
+    toggleItem(index) {
+      const item = this.items[index]
+      if (item && item.done !== undefined) {
+        item.done = !item.done
+      } else {
+        this.items[index].done = false
+      }
+    },
+    deleteItem(index) {
+      this.items.splice(index, 1)
+    },
+    addItem(text) {
+      this.items.push({ text, done: false })
+    }
+  }
+}
+</script>
+
+```
+
+src/components/ChecklistItem.vue
+```vue
+<template>
+  <li :class="{ 'done': localItem.done }">
+    <input type="checkbox" v-model="localItem.done" @change="toggle" />
+    <span>{{ localItem.text }}</span>
+    <button @click="deleteItem">Delete</button>
+  </li>
+</template>
+
+<script>
+export default {
+  props: {
+    item: {
+      type: Object,
+      required: true
+    }
+  },
+  data() {
+    return {
+      localItem: Object.assign({}, this.item)
+    }
+  },
+  methods: {
+    toggle() {
+      this.$emit('toggle')
+    },
+    deleteItem() {
+      this.$emit('delete')
+    }
+  },
+  watch: {
+    item(newValue) {
+      this.localItem = Object.assign({}, newValue)
+    }
+  }
+}
+</script>
+
+```
+
+src/components/NewItemForm.vue
+
+```vue
+<template>
+  <form @submit.prevent="addItem">
+    <input type="text" v-model="text" placeholder="Add a new item..." />
+    <button type="submit">Add</button>
+  </form>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      text: ''
+    }
+  },
+  methods: {
+    addItem() {
+      if (this.text.trim()) {
+        this.$emit('add', this.text.trim())
+        this.text = ''
+      }
+    }
+  }
+}
+</script>
+
+```
+
+src/App.vue
+
+```vue
+<template>
+  <div id="app">
+    <checklist></checklist>
+  </div>
+</template>
+
+<script>
+import Checklist from './components/ChecklistComponent.vue'
+
+export default {
+  components: {
+    Checklist
+  }
+}
+</script>
+
+```
+
+src/main.js
+```js
+import { createApp } from 'vue'
+import App from './App.vue'
+
+createApp(App).mount('#app')
+
+```
+
+public/index.html
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Vue Checklist</title>
+</head>
+<body>
+<div id="app"></div>
+</body>
+</html>
+
+```
+____________
+____________
+____________
+
+
+
+________________________
+# 8 Реактивное редактирование данных
+_______________________________
+# Домашнее задание:
+
+### Задача 1
+Напишите компонент Vue, который выводит список элементов массива. \
+Добавьте возможность добавлять и удалять элементы из этого массива, а также редактировать их значения.
+
+#### Решение
+```vue
+<template>
+  <div>
+    <h2>Список элементов</h2>
+    <!-- Выводим список элементов с кнопками "Удалить" и "Редактировать" -->
+    <ul>
+      <li v-for="(item, index) in items" :key="index">
+        <span>{{ item }}</span>
+        <button @click="removeItem(index)">Удалить</button>
+        <button @click="editItem(index)">Редактировать</button>
+      </li>
+    </ul>
+    <!-- Форма для добавления нового элемента -->
+    <form @submit.prevent="addItem">
+      <input type="text" v-model="newItem">
+      <button type="submit">Добавить</button>
+    </form>
+    <!-- Форма для редактирования элемента -->
+    <div v-if="showEditForm">
+      <h2>Редактирование элемента</h2>
+      <form @submit.prevent="saveEditItem">
+        <input type="text" v-model="editItemValue">
+        <button type="submit">Сохранить</button>
+      </form>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  data() {
+    return {
+      // Изначальный список элементов
+      items: ['item 1', 'item 2', 'item 3'],
+      // Переменная для добавления нового элемента
+      newItem: '',
+      // Флаг для показа/скрытия формы редактирования
+      showEditForm: false,
+      // Индекс элемента, который редактируется
+      editIndex: null,
+      // Новое значение элемента при редактировании
+      editItemValue: '',
+    };
+  },
+  methods: {
+    // Добавление нового элемента в список
+    addItem() {
+      if (this.newItem.trim()) {
+        this.items.push(this.newItem.trim());
+        this.newItem = '';
+      }
+    },
+    // Удаление элемента из списка
+    removeItem(index) {
+      this.items.splice(index, 1);
+    },
+    // Показ формы редактирования элемента
+    editItem(index) {
+      this.showEditForm = true;
+      this.editIndex = index;
+      this.editItemValue = this.items[index];
+    },
+    // Сохранение отредактированного элемента
+    saveEditItem() {
+      if (this.editItemValue.trim()) {
+        this.items.splice(this.editIndex, 1, this.editItemValue.trim());
+        this.editIndex = null;
+        this.editItemValue = '';
+        this.showEditForm = false;
+      }
+    },
+  },
+};
+</script>
+```
+### Задача 2
+
+Создайте форму входа на сайт, включающую поля ввода логина и пароля.\
+При отправке формы осуществлять проверку данных на стороне клиента и сервера.\
+Если данные введены корректно, перенаправлять пользователя на другую страницу.
+
+#### Решение
+
+```vue
+<template>
+  <div>
+    <h2>Вход на сайт</h2>
+    <form @submit.prevent="login">
+      <div>
+        <label for="login">Логин:</label>
+        <input type="text" id="login" v-model="username">
+      </div>
+      <div>
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" v-model="password">
+      </div>
+      <div>
+        <button type="submit">Войти</button>
+      </div>
+    </form>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      username: '',
+      password: '',
+    };
+  },
+  methods: {
+    login() {
+      // Проверяем, что логин и пароль не пустые
+      if (this.username.trim() && this.password.trim()) {
+        // Отправляем данные на сервер для проверки
+        axios.post('/api/login', { username: this.username, password: this.password })
+          .then((response) => {
+            // Если данные верны, перенаправляем на другую страницу
+            if (response.data.success) {
+              this.$router.push('/home');
+            } else {
+              // Если данные неверны, выводим сообщение об ошибке
+              alert('Неверный логин или пароль');
+            }
+          })
+          .catch((error) => {
+            // Если произошла ошибка, выводим ее сообщение
+            alert(error.message);
+          });
+      } else {
+        // Если логин и пароль пустые, выводим сообщение об ошибке
+        alert('Введите логин и пароль');
+      }
+    },
+  },
+};
+</script>
+
+```
+____________
+____________
+____________
+
+
+
+________________________
+# 9
+_______________________________
