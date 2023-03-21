@@ -9,8 +9,9 @@ const fs = require('fs'); // Подключаем модуль для работ
 http.createServer(async (request, response) => { // Создаем HTTP-сервер
     if (request.url !== '/favicon.ico') { // Игнорируем запросы на /favicon.ico
         let path = 'root' + request.url; // Получаем путь к запрошенному файлу
-        let status;
-        let text;
+        let status,
+            text;
+
         try {
             if ((await fs.promises.stat(path)).isDirectory()) { // Если это директория, то ищем index.html
                 path += '/index.html';
@@ -32,7 +33,7 @@ http.createServer(async (request, response) => { // Создаем HTTP-серв
 ### Задача 1
 
 Добавьте к нашему серверу обработку запросов на статические ресурсы, такие как изображения, стили и скрипты.\
-Возможные расширения файлов: .jpg, .jpeg, .png, .svg, .json, .js, .css, .ico.
+Возможные расширения файлов: **.jpg, .jpeg, .png, .svg, .json, .js, .css, .ico**.
 
 #### Решение
 
@@ -109,12 +110,12 @@ http.createServer(async (request, response) => { // Создаем HTTP-серв
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-    <title>{% get title '' %}</title>
-</head>
-<body>
-<h1>Hello, {{ name }}!</h1>
-</body>
+    <head>
+        <title>{% get title '' %}</title>
+    </head>
+    <body>
+        <h1>Hello, {{ name }}!</h1>
+    </body>
 </html>
 ```
 
@@ -154,10 +155,10 @@ function getMimeType(path) {
 http.createServer(async (request, response) => { // Создаем HTTP-сервер
     if (request.url !== '/favicon.ico') { // Игнорировать запросы на /favicon.ico
         let path = 'root' + request.url; // Преобразуем URL в путь к файлу
-        let status;
-        let text;
         let variables = {name: 'World'}; // Создаем объект переменных для шаблонизации
-
+	let status,
+	    text;
+	    
         try {
             if ((await fs.promises.stat(path)).isDirectory()) {
                 path += '/index.html'; // Добавляем /index.html, если это директория
@@ -195,21 +196,21 @@ http.createServer(async (request, response) => { // Создаем HTTP-серв
 
 Реализуйте возможность добавления пользовательских элементов в шаблон сайта.\
 При этом эти элементы будут загружаться из отдельных файлов с расширением .html, расположенных в папке elems.\
-Команда для добавления элемента: {% get element 'имя элемента' %}.
+Команда для добавления элемента: `{% get element 'имя элемента' %}`.
 
 #### Решение
 
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-    <title>{% get title '' %}</title>
-</head>
-<body>
-<div id="header">{% get element 'header' %}</div>
-<div id="content">{% get content '' %}</div>
-<div id="footer">{% get element 'footer' %}</div>
-</body>
+    <head>
+        <title>{% get title '' %}</title>
+    </head>
+    <body>
+        <div id="header">{% get element 'header' %}</div>
+        <div id="content">{% get content '' %}</div>
+        <div id="footer">{% get element 'footer' %}</div>
+    </body>
 </html>
 
 ```
@@ -260,8 +261,8 @@ function loadTemplate(name, variables) {
 http.createServer(async (request, response) => {
     if (request.url !== '/favicon.ico') {
         let path = 'root' + request.url;
-        let status;
-        let text;
+        let status,
+            text;
         let variables = {name: 'World'};
 
         try {
@@ -303,24 +304,24 @@ http.createServer(async (request, response) => {
 ### Задача 4
 
 Реализуйте возможность подключения стилей и скриптов к страницам сайта. \
-Для этого добавьте в шаблон сайта два новых тега: {% css 'путь к css файлу' %} и {% js 'путь к js файлу' %}. \
-Эти теги должны вставлять соответствующие теги link и script в соответствующие места в head и body страницы.
+Для этого добавьте в шаблон сайта два новых тега: `{% css 'путь к css файлу' %}` и `{% js 'путь к js файлу' %}`. \
+Эти теги должны вставлять соответствующие теги **<link/>** и **<script/>** в соответствующие места в head и body страницы.
 
 #### Решение
 
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-    <title>{% get title '' %}</title>
-    {% css '/css/style.css' %}
-</head>
-<body>
-<div id="header">{% get element 'header' %}</div>
-<div id="content">{% get content '' %}</div>
-{% js '/js/main.js' %}
-<div id="footer">{% get element 'footer' %}</div>
-</body>
+    <head>
+        <title>{% get title '' %}</title>
+        {% css '/css/style.css' %}
+    </head>
+    <body>
+        <div id="header">{% get element 'header' %}</div>
+        <div id="content">{% get content '' %}</div>
+        {% js '/js/main.js' %}
+        <div id="footer">{% get element 'footer' %}</div>
+    </body>
 </html>
 
 ```
@@ -397,8 +398,8 @@ function parseTags(text, variables) {
 http.createServer(async (request, response) => {
     if (request.url !== '/favicon.ico') {
         let path = 'root' + request.url;
-        let status;
-        let text;
+        let status,
+            text;
         let variables = {name: 'World'};
 
         try {

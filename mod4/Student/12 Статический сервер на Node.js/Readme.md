@@ -77,12 +77,12 @@ function getMimeType(path) {
         css:  'text/css',
         ico:  'image/x-icon',
     };
-
+    
     let exts = Object.keys(mimes);
     let extReg = new RegExp('\\.(' + exts.join('|') + ')$');
-
+    
     let ext = path.match(extReg)[1];
-
+    
     if (ext) {
         return mimes[ext];
     } else {
@@ -115,17 +115,17 @@ function getMimeType(path) {
         css:  'text/css',
         ico:  'image/x-icon',
     };
-
+    
     let exts = Object.keys(mimes);
     let extReg = new RegExp('\\.(' + exts.join('|') + ')$');
-
+    
     let ext = path.match(extReg)[1];
-
+    
     if (ext) {
         return mimes[ext];
     } else {
-        return 'text/plain';
-    }
+    return 'text/plain';
+}
 }
 
 http.createServer(async (request, response) => {
@@ -164,7 +164,7 @@ http.createServer(async (request, response) => {
 Шаблон обычно состоит из HTML, CSS и JavaScript кода.
 
 Мы хотим добавить возможность использовать отдельные файлы для каждой из общих частей страницы.\
-Для этого мы будем использовать специальную команду {% get element '' %}, где в кавычках будет имя элемента.\
+Для этого мы будем использовать специальную команду `{% get element '' %}`, где в кавычках будет имя элемента.\
 Мы будем искать этот элемент в отдельных файлах и заменять команду на содержимое файла.
 
 Если мы используем следующий файл шаблона:
@@ -172,25 +172,25 @@ http.createServer(async (request, response) => {
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-    <title>{% get title '' %}</title>
-</head>
-<body>
-<div id="wrapper">
-    <header>
-        {% get element 'header' ''}
-    </header>
-    <main>
-        {% get content '' %}
-    </main>
-    <aside>
-        {% get element 'sidebar' ''}
-    </aside>
-    <footer>
-        {% get element 'footer' ''}
-    </footer>
-</div>
-</body>
+    <head>
+        <title>{% get title '' %}</title>
+    </head>
+    <body>
+        <div id="wrapper">
+            <header>
+                {% get element 'header' ''}
+            </header>
+            <main>
+                {% get content '' %}
+            </main>
+            <aside>
+                {% get element 'sidebar' ''}
+            </aside>
+            <footer>
+                {% get element 'footer' ''}
+            </footer>
+        </div>
+    </body>
 </html>
 ```
 
@@ -199,14 +199,14 @@ http.createServer(async (request, response) => {
 * header.html
 * content.html
 * sidebar.html
-* footer.html\
+* footer.html
 
-Когда мы обрабатываем этот шаблон, мы заменяем команды {% get element '' %} на содержимое соответствующего файла.
+Когда мы обрабатываем этот шаблон, мы заменяем команды `{% get element '' %}` на содержимое соответствующего файла.
 
 # Реализация
 
 Реализуем эту функциональность в нашем сервере на NodeJS.\
-Мы будем использовать модуль fs для чтения содержимого файлов и регулярные выражения для поиска команд {% get element '' %} в файле шаблона.
+Мы будем использовать модуль fs для чтения содержимого файлов и регулярные выражения для поиска команд `{% get element '' %}` в файле шаблона.
 
 
 ```js
@@ -230,12 +230,12 @@ function getMimeType(path) {
         css:  'text/css',
         ico:  'image/x-icon',
     };
-
+    
     let exts = Object.keys(mimes);
     let extReg = new RegExp('\\.(' + exts.join('|') + ')$');
-
+    
     let ext = path.match(extReg)[1];
-
+    
     if (ext) {
         return mimes[ext];
     } else {
@@ -246,24 +246,24 @@ function getMimeType(path) {
 http.createServer(async (request, response) => {
     if (request.url !== '/favicon.ico') {
         let path = 'root' + request.url;
-        let status;
-        let text;
-
+        let status,
+	    text;
+        
         try {
             if ((await fs.promises.stat(path)).isDirectory()) {
                 path += '/index.html';
             }
-
+            
             text = await fs.promises.readFile(path, 'utf8');
             status = 200;
         } catch (err) {
             text = 'Page not found';
             status = 404;
         }
-
+        
         let mimeType = getMimeType(path);
         response.writeHead(status, {'Content-Type': mimeType});
-
+        
         // Обработка команд {% get element '' %}
         let reg = /\{% get element '(.+?)' %\}/g;
         text = text.replace(reg, async (match0, match1) => {
@@ -271,7 +271,7 @@ http.createServer(async (request, response) => {
             let elemText = await fs.promises.readFile(elemPath, 'utf8');
             return elemText;
         });
-
+        
         response.write(text);
         response.end();
     }
@@ -286,7 +286,7 @@ http.createServer(async (request, response) => {
 Если это так, мы добавляем /index.html к пути. \
 Далее мы считываем содержимое файла и отправляем его клиенту, определяя MIME тип с помощью функции getMimeType.
 
-После мы используем регулярное выражение для поиска команд {% get element '' %} в файле, и заменяем их на содержимое соответствующих файлов, которые находятся в папке elems.
+После мы используем регулярное выражение для поиска команд `{% get element '' %}` в файле, и заменяем их на содержимое соответствующих файлов, которые находятся в папке elems.
 
 В итоге мы отправляем содержимое файла клиенту с правильным MIME типом и закрываем соединение.
 
@@ -310,18 +310,18 @@ index.html:
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Главная страница</title>
-    {% css '/css/main.css' %}
+	<title>Главная страница</title>
+	{% css '/css/main.css' %}
 </head>
 <body>
-{% get element 'header' %}
-<div id="content">
-    <h1>Добро пожаловать!</h1>
-    <p>Вы находитесь на главной странице сайта.</p>
-    <p>Мы рады приветствовать вас на нашем сайте.</p>
-</div>
-{% get element 'footer' %}
-{% js '/js/main.js' %}
+	{% get element 'header' %}
+	<div id="content">
+		<h1>Добро пожаловать!</h1>
+		<p>Вы находитесь на главной странице сайта.</p>
+		<p>Мы рады приветствовать вас на нашем сайте.</p>
+	</div>
+	{% get element 'footer' %}
+	{% js '/js/main.js' %}
 </body>
 </html>
 
@@ -333,21 +333,21 @@ dir/index.html:
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Страница с директорией</title>
-    {% css '/css/main.css' %}
+	<title>Страница с директорией</title>
+	{% css '/css/main.css' %}
 </head>
 <body>
-{% get element 'header' %}
-<div id="content">
-    <h1>Добро пожаловать в директорию!</h1>
-    <p>Вы находитесь в директории.</p>
-    <p>Здесь можно увидеть список файлов:</p>
-    <ul>
-        <li><a href="test.html">test.html</a></li>
-    </ul>
-</div>
-{% get element 'footer' %}
-{% js '/js/main.js' %}
+	{% get element 'header' %}
+	<div id="content">
+		<h1>Добро пожаловать в директорию!</h1>
+		<p>Вы находитесь в директории.</p>
+		<p>Здесь можно увидеть список файлов:</p>
+		<ul>
+			<li><a href="test.html">test.html</a></li>
+		</ul>
+	</div>
+	{% get element 'footer' %}
+	{% js '/js/main.js' %}
 </body>
 </html>
 
@@ -359,17 +359,17 @@ dir/test.html:
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Тестовая страница</title>
-    {% css '/css/main.css' %}
+	<title>Тестовая страница</title>
+	{% css '/css/main.css' %}
 </head>
 <body>
-{% get element 'header' %}
-<div id="content">
-    <h1>Тестовая страница</h1>
-    <p>Это тестовая страница.</p>
-</div>
-{% get element 'footer' %}
-{% js '/js/main.js' %}
+	{% get element 'header' %}
+	<div id="content">
+		<h1>Тестовая страница</h1>
+		<p>Это тестовая страница.</p>
+	</div>
+	{% get element 'footer' %}
+	{% js '/js/main.js' %}
 </body>
 </html>
 
@@ -380,14 +380,14 @@ elems/header.html:
 
 ```html
 <header>
-    <h1>Название сайта</h1>
-    <nav>
-        <ul>
-            <li><a href="/">Главная</a></li>
-            <li><a href="/dir">Директория</a></li>
-            <li><a href="/non-existent-page">Страница, которой не существует</a></li>
-        </ul>
-    </nav>
+	<h1>Название сайта</h1>
+	<nav>
+		<ul>
+			<li><a href="/">Главная</a></li>
+			<li><a href="/dir">Директория</a></li>
+			<li><a href="/non-existent-page">Страница, которой не существует</a></li>
+		</ul>
+	</nav>
 </header>
 
 ```
@@ -396,7 +396,7 @@ elems/footer.html:
 
 ```html
 <footer>
-    <p>© 2023 Мой сайт</p>
+	<p>© 2023 Мой сайт</p>
 </footer>
 
 ```
@@ -405,41 +405,41 @@ css/main.css:
 
 ```css
 body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.5;
+	margin: 0;
+	padding: 0;
+	font-family: Arial, sans-serif;
+	font-size: 16px;
+	line-height: 1.5;
 }
 
 header {
-    background-color: #333;
-    color: #fff;
-    padding: 10px;
+	background-color: #333;
+	color: #fff;
+	padding: 10px;
 }
 
 nav ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: flex;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: flex;
 }
 
 nav li {
-    margin-right: 10px;
+	margin-right: 10px;
 }
 
 nav li:last-child {
-    margin-right: 0;
+	margin-right: 0;
 }
 
 nav a {
-    color: #fff;
-    text-decoration: none;
+	color: #fff;
+	text-decoration: none;
 }
 
 nav a:hover {
-    text-decoration: underline;
+	text-decoration: underline;
 }
 
 #content {
@@ -485,8 +485,9 @@ const fs = require('fs'); // Подключаем модуль для работ
 http.createServer(async (request, response) => { // Создаем HTTP-сервер
     if (request.url !== '/favicon.ico') { // Игнорируем запросы на /favicon.ico
         let path = 'root' + request.url; // Получаем путь к запрошенному файлу
-        let status;
-        let text;
+        let status,
+	    text;
+	    
         try {
             if ((await fs.promises.stat(path)).isDirectory()) { // Если это директория, то ищем index.html
                 path += '/index.html';
@@ -508,20 +509,22 @@ http.createServer(async (request, response) => { // Создаем HTTP-серв
 ### Задача 1
 
 Добавьте к нашему серверу обработку запросов на статические ресурсы, такие как изображения, стили и скрипты.\
-Возможные расширения файлов: .jpg, .jpeg, .png, .svg, .json, .js, .css, .ico.
+Возможные расширения файлов: **.jpg, .jpeg, .png, .svg, .json, .js, .css, .ico**.
+
 
 ### Задача 2
 
 На сервере добавьте возможность использования переменных в файлах шаблона, которые будут заменяться на соответствующие значения при обработке шаблона.
 
+
 ### Задача 3
 
 Реализуйте возможность добавления пользовательских элементов в шаблон сайта.\
 При этом эти элементы будут загружаться из отдельных файлов с расширением .html, расположенных в папке elems.\
-Команда для добавления элемента: {% get element 'имя элемента' %}.
+Команда для добавления элемента: `{% get element 'имя элемента' %}`.
 
 ### Задача 4
 
 Реализуйте возможность подключения стилей и скриптов к страницам сайта. \
-Для этого добавьте в шаблон сайта два новых тега: {% css 'путь к css файлу' %} и {% js 'путь к js файлу' %}. \
-Эти теги должны вставлять соответствующие теги link и script в соответствующие места в head и body страницы.
+Для этого добавьте в шаблон сайта два новых тега: `{% css 'путь к css файлу' %}` и `{% js 'путь к js файлу' %}`. \
+Эти теги должны вставлять соответствующие теги **<link/>** и **<script/>** в соответствующие места в head и body страницы.
