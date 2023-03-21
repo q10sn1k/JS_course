@@ -109,12 +109,12 @@ http.createServer(async (request, response) => { // Создаем HTTP-серв
 ```html
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>{% get title '' %}</title>
-    </head>
-    <body>
-        <h1>Hello, {{ name }}!</h1>
-    </body>
+<head>
+    <title>{% get title '' %}</title>
+</head>
+<body>
+<h1>Hello, {{ name }}!</h1>
+</body>
 </html>
 ```
 
@@ -202,14 +202,14 @@ http.createServer(async (request, response) => { // Создаем HTTP-серв
 ```html
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>{% get title '' %}</title>
-    </head>
-    <body>
-        <div id="header">{% get element 'header' %}</div>
-        <div id="content">{% get content '' %}</div>
-        <div id="footer">{% get element 'footer' %}</div>
-    </body>
+<head>
+    <title>{% get title '' %}</title>
+</head>
+<body>
+<div id="header">{% get element 'header' %}</div>
+<div id="content">{% get content '' %}</div>
+<div id="footer">{% get element 'footer' %}</div>
+</body>
 </html>
 
 ```
@@ -311,16 +311,16 @@ http.createServer(async (request, response) => {
 ```html
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>{% get title '' %}</title>
-        {% css '/css/style.css' %}
-    </head>
-    <body>
-        <div id="header">{% get element 'header' %}</div>
-        <div id="content">{% get content '' %}</div>
-        {% js '/js/main.js' %}
-        <div id="footer">{% get element 'footer' %}</div>
-    </body>
+<head>
+    <title>{% get title '' %}</title>
+    {% css '/css/style.css' %}
+</head>
+<body>
+<div id="header">{% get element 'header' %}</div>
+<div id="content">{% get content '' %}</div>
+{% js '/js/main.js' %}
+<div id="footer">{% get element 'footer' %}</div>
+</body>
 </html>
 
 ```

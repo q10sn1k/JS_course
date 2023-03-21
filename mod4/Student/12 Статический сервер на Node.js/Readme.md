@@ -33,7 +33,7 @@ http.createServer(async (request, response) => {
 
 Когда мы запрашиваем страницу по URL типа /dir/sub/, мы хотим, чтобы был отдан файл index.html из папки /dir/sub/.\
 Для этого нам нужно добавить проверку на то, является ли запрошенный путь директорией. \
-Если это так, мы добавляем к пути /index.html. 
+Если это так, мы добавляем к пути /index.html.
 
 
 ```js
@@ -77,12 +77,12 @@ function getMimeType(path) {
         css:  'text/css',
         ico:  'image/x-icon',
     };
-    
+
     let exts = Object.keys(mimes);
     let extReg = new RegExp('\\.(' + exts.join('|') + ')$');
-    
+
     let ext = path.match(extReg)[1];
-    
+
     if (ext) {
         return mimes[ext];
     } else {
@@ -115,17 +115,17 @@ function getMimeType(path) {
         css:  'text/css',
         ico:  'image/x-icon',
     };
-    
+
     let exts = Object.keys(mimes);
     let extReg = new RegExp('\\.(' + exts.join('|') + ')$');
-    
+
     let ext = path.match(extReg)[1];
-    
+
     if (ext) {
         return mimes[ext];
     } else {
-    return 'text/plain';
-}
+        return 'text/plain';
+    }
 }
 
 http.createServer(async (request, response) => {
@@ -172,34 +172,34 @@ http.createServer(async (request, response) => {
 ```html
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>{% get title '' %}</title>
-    </head>
-    <body>
-        <div id="wrapper">
-            <header>
-                {% get element 'header' ''}
-            </header>
-            <main>
-                {% get content '' %}
-            </main>
-            <aside>
-                {% get element 'sidebar' ''}
-            </aside>
-            <footer>
-                {% get element 'footer' ''}
-            </footer>
-        </div>
-    </body>
+<head>
+    <title>{% get title '' %}</title>
+</head>
+<body>
+<div id="wrapper">
+    <header>
+        {% get element 'header' ''}
+    </header>
+    <main>
+        {% get content '' %}
+    </main>
+    <aside>
+        {% get element 'sidebar' ''}
+    </aside>
+    <footer>
+        {% get element 'footer' ''}
+    </footer>
+</div>
+</body>
 </html>
 ```
 
 То мы можем использовать следующие файлы для каждой из частей:
 
- * header.html
- * content.html
- * sidebar.html
- * footer.html\
+* header.html
+* content.html
+* sidebar.html
+* footer.html\
 
 Когда мы обрабатываем этот шаблон, мы заменяем команды {% get element '' %} на содержимое соответствующего файла.
 
@@ -230,12 +230,12 @@ function getMimeType(path) {
         css:  'text/css',
         ico:  'image/x-icon',
     };
-    
+
     let exts = Object.keys(mimes);
     let extReg = new RegExp('\\.(' + exts.join('|') + ')$');
-    
+
     let ext = path.match(extReg)[1];
-    
+
     if (ext) {
         return mimes[ext];
     } else {
@@ -248,22 +248,22 @@ http.createServer(async (request, response) => {
         let path = 'root' + request.url;
         let status;
         let text;
-        
+
         try {
             if ((await fs.promises.stat(path)).isDirectory()) {
                 path += '/index.html';
             }
-            
+
             text = await fs.promises.readFile(path, 'utf8');
             status = 200;
         } catch (err) {
             text = 'Page not found';
             status = 404;
         }
-        
+
         let mimeType = getMimeType(path);
         response.writeHead(status, {'Content-Type': mimeType});
-        
+
         // Обработка команд {% get element '' %}
         let reg = /\{% get element '(.+?)' %\}/g;
         text = text.replace(reg, async (match0, match1) => {
@@ -271,7 +271,7 @@ http.createServer(async (request, response) => {
             let elemText = await fs.promises.readFile(elemPath, 'utf8');
             return elemText;
         });
-        
+
         response.write(text);
         response.end();
     }
@@ -310,18 +310,18 @@ index.html:
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Главная страница</title>
-	{% css '/css/main.css' %}
+    <title>Главная страница</title>
+    {% css '/css/main.css' %}
 </head>
 <body>
-	{% get element 'header' %}
-	<div id="content">
-		<h1>Добро пожаловать!</h1>
-		<p>Вы находитесь на главной странице сайта.</p>
-		<p>Мы рады приветствовать вас на нашем сайте.</p>
-	</div>
-	{% get element 'footer' %}
-	{% js '/js/main.js' %}
+{% get element 'header' %}
+<div id="content">
+    <h1>Добро пожаловать!</h1>
+    <p>Вы находитесь на главной странице сайта.</p>
+    <p>Мы рады приветствовать вас на нашем сайте.</p>
+</div>
+{% get element 'footer' %}
+{% js '/js/main.js' %}
 </body>
 </html>
 
@@ -333,21 +333,21 @@ dir/index.html:
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Страница с директорией</title>
-	{% css '/css/main.css' %}
+    <title>Страница с директорией</title>
+    {% css '/css/main.css' %}
 </head>
 <body>
-	{% get element 'header' %}
-	<div id="content">
-		<h1>Добро пожаловать в директорию!</h1>
-		<p>Вы находитесь в директории.</p>
-		<p>Здесь можно увидеть список файлов:</p>
-		<ul>
-			<li><a href="test.html">test.html</a></li>
-		</ul>
-	</div>
-	{% get element 'footer' %}
-	{% js '/js/main.js' %}
+{% get element 'header' %}
+<div id="content">
+    <h1>Добро пожаловать в директорию!</h1>
+    <p>Вы находитесь в директории.</p>
+    <p>Здесь можно увидеть список файлов:</p>
+    <ul>
+        <li><a href="test.html">test.html</a></li>
+    </ul>
+</div>
+{% get element 'footer' %}
+{% js '/js/main.js' %}
 </body>
 </html>
 
@@ -359,17 +359,17 @@ dir/test.html:
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Тестовая страница</title>
-	{% css '/css/main.css' %}
+    <title>Тестовая страница</title>
+    {% css '/css/main.css' %}
 </head>
 <body>
-	{% get element 'header' %}
-	<div id="content">
-		<h1>Тестовая страница</h1>
-		<p>Это тестовая страница.</p>
-	</div>
-	{% get element 'footer' %}
-	{% js '/js/main.js' %}
+{% get element 'header' %}
+<div id="content">
+    <h1>Тестовая страница</h1>
+    <p>Это тестовая страница.</p>
+</div>
+{% get element 'footer' %}
+{% js '/js/main.js' %}
 </body>
 </html>
 
@@ -380,14 +380,14 @@ elems/header.html:
 
 ```html
 <header>
-	<h1>Название сайта</h1>
-	<nav>
-		<ul>
-			<li><a href="/">Главная</a></li>
-			<li><a href="/dir">Директория</a></li>
-			<li><a href="/non-existent-page">Страница, которой не существует</a></li>
-		</ul>
-	</nav>
+    <h1>Название сайта</h1>
+    <nav>
+        <ul>
+            <li><a href="/">Главная</a></li>
+            <li><a href="/dir">Директория</a></li>
+            <li><a href="/non-existent-page">Страница, которой не существует</a></li>
+        </ul>
+    </nav>
 </header>
 
 ```
@@ -396,7 +396,7 @@ elems/footer.html:
 
 ```html
 <footer>
-	<p>© 2023 Мой сайт</p>
+    <p>© 2023 Мой сайт</p>
 </footer>
 
 ```
@@ -405,41 +405,41 @@ css/main.css:
 
 ```css
 body {
-	margin: 0;
-	padding: 0;
-	font-family: Arial, sans-serif;
-	font-size: 16px;
-	line-height: 1.5;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
 }
 
 header {
-	background-color: #333;
-	color: #fff;
-	padding: 10px;
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
 }
 
 nav ul {
-	margin: 0;
-	padding: 0;
-	list-style: none;
-	display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
 }
 
 nav li {
-	margin-right: 10px;
+    margin-right: 10px;
 }
 
 nav li:last-child {
-	margin-right: 0;
+    margin-right: 0;
 }
 
 nav a {
-	color: #fff;
-	text-decoration: none;
+    color: #fff;
+    text-decoration: none;
 }
 
 nav a:hover {
-	text-decoration: underline;
+    text-decoration: underline;
 }
 
 #content {
