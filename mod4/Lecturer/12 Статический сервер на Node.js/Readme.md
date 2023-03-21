@@ -164,7 +164,7 @@ http.createServer(async (request, response) => {
 Шаблон обычно состоит из HTML, CSS и JavaScript кода.
 
 Мы хотим добавить возможность использовать отдельные файлы для каждой из общих частей страницы.\
-Для этого мы будем использовать специальную команду {% get element '' %}, где в кавычках будет имя элемента.\
+Для этого мы будем использовать специальную команду `{% get element '' %}`, где в кавычках будет имя элемента.\
 Мы будем искать этот элемент в отдельных файлах и заменять команду на содержимое файла.
 
 Если мы используем следующий файл шаблона:
@@ -199,14 +199,14 @@ http.createServer(async (request, response) => {
  * header.html
  * content.html
  * sidebar.html
- * footer.html\
+ * footer.html
 
-Когда мы обрабатываем этот шаблон, мы заменяем команды {% get element '' %} на содержимое соответствующего файла.
+Когда мы обрабатываем этот шаблон, мы заменяем команды `{% get element '' %}` на содержимое соответствующего файла.
 
 # Реализация
 
 Реализуем эту функциональность в нашем сервере на NodeJS.\
-Мы будем использовать модуль fs для чтения содержимого файлов и регулярные выражения для поиска команд {% get element '' %} в файле шаблона.
+Мы будем использовать модуль fs для чтения содержимого файлов и регулярные выражения для поиска команд `{% get element '' %}` в файле шаблона.
 
 
 ```js
@@ -246,8 +246,8 @@ function getMimeType(path) {
 http.createServer(async (request, response) => {
     if (request.url !== '/favicon.ico') {
         let path = 'root' + request.url;
-        let status;
-        let text;
+        let status,
+	    text;
         
         try {
             if ((await fs.promises.stat(path)).isDirectory()) {
@@ -286,7 +286,7 @@ http.createServer(async (request, response) => {
 Если это так, мы добавляем /index.html к пути. \
 Далее мы считываем содержимое файла и отправляем его клиенту, определяя MIME тип с помощью функции getMimeType.
 
-После мы используем регулярное выражение для поиска команд {% get element '' %} в файле, и заменяем их на содержимое соответствующих файлов, которые находятся в папке elems.
+После мы используем регулярное выражение для поиска команд `{% get element '' %}` в файле, и заменяем их на содержимое соответствующих файлов, которые находятся в папке elems.
 
 В итоге мы отправляем содержимое файла клиенту с правильным MIME типом и закрываем соединение.
 
@@ -485,8 +485,9 @@ const fs = require('fs'); // Подключаем модуль для работ
 http.createServer(async (request, response) => { // Создаем HTTP-сервер
     if (request.url !== '/favicon.ico') { // Игнорируем запросы на /favicon.ico
         let path = 'root' + request.url; // Получаем путь к запрошенному файлу
-        let status;
-        let text;
+        let status,
+	    text;
+	    
         try {
             if ((await fs.promises.stat(path)).isDirectory()) { // Если это директория, то ищем index.html
                 path += '/index.html';
@@ -508,7 +509,7 @@ http.createServer(async (request, response) => { // Создаем HTTP-серв
 ### Задача 1
 
 Добавьте к нашему серверу обработку запросов на статические ресурсы, такие как изображения, стили и скрипты.\
-Возможные расширения файлов: .jpg, .jpeg, .png, .svg, .json, .js, .css, .ico.
+Возможные расширения файлов: **.jpg, .jpeg, .png, .svg, .json, .js, .css, .ico**.
 
 #### Решение
 
@@ -630,10 +631,10 @@ function getMimeType(path) {
 http.createServer(async (request, response) => { // Создаем HTTP-сервер
     if (request.url !== '/favicon.ico') { // Игнорировать запросы на /favicon.ico
         let path = 'root' + request.url; // Преобразуем URL в путь к файлу
-        let status;
-        let text;
         let variables = {name: 'World'}; // Создаем объект переменных для шаблонизации
-
+	let status,
+	    text;
+	    
         try {
             if ((await fs.promises.stat(path)).isDirectory()) {
                 path += '/index.html'; // Добавляем /index.html, если это директория
@@ -671,7 +672,7 @@ http.createServer(async (request, response) => { // Создаем HTTP-серв
 
 Реализуйте возможность добавления пользовательских элементов в шаблон сайта.\
 При этом эти элементы будут загружаться из отдельных файлов с расширением .html, расположенных в папке elems.\
-Команда для добавления элемента: {% get element 'имя элемента' %}.
+Команда для добавления элемента: `{% get element 'имя элемента' %}`.
 
 #### Решение
 
@@ -736,8 +737,8 @@ function loadTemplate(name, variables) {
 http.createServer(async (request, response) => {
     if (request.url !== '/favicon.ico') {
         let path = 'root' + request.url;
-        let status;
-        let text;
+        let status,
+            text;
         let variables = {name: 'World'};
 
         try {
@@ -779,8 +780,8 @@ http.createServer(async (request, response) => {
 ### Задача 4
 
 Реализуйте возможность подключения стилей и скриптов к страницам сайта. \
-Для этого добавьте в шаблон сайта два новых тега: {% css 'путь к css файлу' %} и {% js 'путь к js файлу' %}. \
-Эти теги должны вставлять соответствующие теги link и script в соответствующие места в head и body страницы.
+Для этого добавьте в шаблон сайта два новых тега: `{% css 'путь к css файлу' %}` и `{% js 'путь к js файлу' %}`. \
+Эти теги должны вставлять соответствующие теги **<link/>** и **<script/>** в соответствующие места в head и body страницы.
 
 #### Решение
 
@@ -873,8 +874,8 @@ function parseTags(text, variables) {
 http.createServer(async (request, response) => {
     if (request.url !== '/favicon.ico') {
         let path = 'root' + request.url;
-        let status;
-        let text;
+        let status,
+            text;
         let variables = {name: 'World'};
 
         try {
