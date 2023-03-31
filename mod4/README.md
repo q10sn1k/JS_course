@@ -3198,7 +3198,37 @@ ____________
 
 ________________________
 # 18 app $$ test part2
+# Домашнее задание 
 
+## Задача 1. 
+
+создайте роутер postRouter.js
+
+```js
+const express = require('express');
+const postController = require('../controllers/postController');
+
+const router = express.Router();
+
+// Получение списка всех постов
+router.get('/', postController.getAllPosts);
+
+// Получение поста по ID
+router.get('/:id', postController.getPostById);
+
+// Создание нового поста
+router.post('/', postController.createPost);
+
+// Обновление поста
+router.put('/update-post', postController.updatePost);
+
+// Удаление поста
+router.delete('/delete-post', postController.deletePost);
+
+module.exports = router;
+
+
+```
 ____________
 ____________
 ____________
@@ -3207,6 +3237,364 @@ ____________
 
 ________________________
 # 19 app $$ test part3
+____________________________
+____________________________
+## Домашнее задание
+
+## Задача 1
+
+Напишите тест postController.test.js
+
+## решение
+
+```js
+const chai = require('chai');
+const sinon = require('sinon');
+const postController = require('../controllers/postController');
+const postModel = require('../models/post');
+
+const { expect } = chai;
+
+describe('Post Controller', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('should get all posts', async () => {
+    const posts = [
+      { id: 1, title: 'Post 1', content: 'Content 1' },
+      { id: 2, title: 'Post 2', content: 'Content 2' },
+    ];
+
+    const req = {};
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+    const next = sinon.stub();
+
+    sinon.stub(postModel, 'getAllPosts').resolves(posts);
+
+    await postController.getAllPosts(req, res, next);
+
+    expect(res.status.calledOnceWith(200)).to.be.true;
+    expect(res.json.calledOnceWith(posts)).to.be.true;
+    expect(next.notCalled).to.be.true;
+  });
+
+  it('should get a post by id', async () => {
+  const post = { id: 1, title: 'Post 1', content: 'Content 1' };
+
+  const req = {
+    params: {
+      id: post.id,
+    },
+  };
+  const res = {
+    status: sinon.stub().returnsThis(),
+    json: sinon.stub(),
+  };
+  const next = sinon.stub();
+
+  sinon.stub(postModel, 'getPostById').resolves(post);
+
+  await postController.getPostById(req, res, next);
+
+  expect(res.status.calledOnceWith(200)).to.be.true;
+  expect(res.json.calledOnceWith(post)).to.be.true;
+  expect(next.notCalled).to.be.true;
+});
+
+it('should return 404 when post not found by id', async () => {
+  const req = {
+    params: {
+      id: 1,
+    },
+  };
+  const res = {
+    status: sinon.stub().returnsThis(),
+    json: sinon.stub(),
+  };
+  const next = sinon.stub();
+
+  sinon.stub(postModel, 'getPostById').resolves(null);
+
+  await postController.getPostById(req, res, next);
+
+  expect(res.status.calledOnceWith(404)).to.be.true;
+  expect(res.json.calledOnceWith({ message: 'Post not found' })).to.be.true;
+  expect(next.notCalled).to.be.true;
+});
+
+it('should create a new post', async () => {
+  const post = { title: 'New Post', content: 'New Content' };
+  const postId = 1;
+
+  const req = {
+    body: post,
+  };
+  const res = {
+    status: sinon.stub().returnsThis(),
+    json: sinon.stub(),
+  };
+  const next = sinon.stub();
+
+  sinon.stub(postModel, 'createPost').resolves(postId);
+
+  await postController.createPost(req, res, next);
+
+  expect(res.status.calledOnceWith(201)).to.be.true;
+  expect(res.json.calledOnceWith({ message: 'Post created', postId })).to.be.true;
+  expect(next.notCalled).to.be.true;
+});
+
+it('should update a post', async () => {
+  const postId = 1;
+  const updatedPost = { title: 'Updated Post', content: 'Updated Content' };
+
+  const req = {
+    params: {
+      id: postId,
+    },
+    body: updatedPost,
+  };
+  const res = {
+    status: sinon.stub().returnsThis(),
+    json: sinon.stub(),
+  };
+  const next = sinon.stub();
+
+  sinon.stub(postModel, 'updatePost').resolves(1);
+
+  await postController.updatePost(req, res, next);
+
+  expect(res.status.calledOnceWith(200)).to.be.true;
+  expect(res.json.calledOnceWith({ message: 'Post updated', affectedRows: 1 })).to.be.true;
+  expect(next.notCalled).to.be.true;
+});
+
+  it('should return 404 when updating a non-existent post', async () => {
+  const postId = 1;
+  const updatedPost = { title: 'Updated Post', content: 'Updated Content' };
+
+  const req = {
+    params: {
+      id: postId,
+    },
+    body: updatedPost,
+  };
+  const res = {
+    status: sinon.stub().returnsThis(),
+    json: sinon.stub(),
+  };
+  const next = sinon.stub();
+
+  sinon.stub(postModel, 'updatePost').resolves(0);
+
+  await postController.updatePost(req, res, next);
+
+  expect(res.status.calledOnceWith(404)).to.be.true;
+  expect(res.json.calledOnceWith({ message: 'Post not found' })).to.be.true;
+  expect(next.notCalled).to.be.true;
+});
+
+it('should delete a post', async () => {
+  const postId = 1;
+
+  const req = {
+    params: {
+      id: postId,
+    },
+  };
+  const res = {
+    status: sinon.stub().returnsThis(),
+    json: sinon.stub(),
+  };
+  const next = sinon.stub();
+
+  sinon.stub(postModel, 'deletePost').resolves(1);
+
+  await postController.deletePost(req, res, next);
+
+  expect(res.status.calledOnceWith(200)).to.be.true;
+  expect(res.json.calledOnceWith({ message: 'Post deleted', affectedRows: 1 })).to.be.true;
+  expect(next.notCalled).to.be.true;
+});
+
+it('should return 404 when deleting a non-existent post', async () => {
+  const postId = 1;
+
+  const req = {
+    params: {
+      id: postId,
+    },
+  };
+  const res = {
+    status: sinon.stub().returnsThis(),
+    json: sinon.stub(),
+  };
+  const next = sinon.stub();
+
+  sinon.stub(postModel, 'deletePost').resolves(0);
+
+  await postController.deletePost(req, res, next);
+
+  expect(res.status.calledOnceWith(404)).to.be.true;
+  expect(res.json.calledOnceWith({ message: 'Post not found' })).to.be.true;
+  expect(next.notCalled).to.be.true;
+});
+});
+
+```
+
+## Задача 2
+
+Напшем тест postRouter.test.js
+
+## решение
+
+```js
+const request = require('supertest');
+const expect = require('chai').expect;
+const { app, startServer, stopServer } = require('../app');
+const postRoutes = require('../routes/postRoutes');
+
+const TIMEOUT = 10000; // 10 seconds
+
+describe('API tests', function () {
+  this.timeout(TIMEOUT);
+
+  before(function (done) {
+    startServer();
+    done();
+  });
+
+  after(function (done) {
+    stopServer();
+    done();
+  });
+  // app.use('/api/posts', postRoutes);
+
+  describe('POST /api/posts', function () {
+    this.timeout(TIMEOUT);
+
+    it('should create a new post and return its id', async () => {
+      const response = await request(app)
+          .post('/api/posts')
+          .send({title: 'Test Post', content: 'Test Content'});
+
+      expect(response.status).to.equal(201);
+      expect(response.body.message).to.equal('Post created');
+      expect(response.body.postId).to.be.a('number');
+    });
+  });
+
+  describe('GET /api/posts', function () {
+    this.timeout(TIMEOUT);
+    it('should return a list of posts', async () => {
+      const response = await request(app).get('/api/posts');
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.be.an('array');
+    });
+  });
+
+  describe('GET /api/posts/:id', function () {
+  this.timeout(TIMEOUT);
+
+  let postId;
+  before(async () => {
+    const response = await request(app)
+      .post('/api/posts')
+      .send({ title: 'Test Post', content: 'Test Content' });
+
+    postId = response.body.postId;
+  });
+
+  it('should return a post by id', async () => {
+    const response = await request(app).get(`/api/posts/${postId}`);
+
+    expect(response.status).to.equal(200);
+    expect(response.body.id).to.equal(postId);
+  });
+
+    it('should return 404 when post not found', async () => {
+      const postId = 999;
+      const response = await request(app).get(`/api/posts/${postId}`);
+
+      expect(response.status).to.equal(404);
+      expect(response.body.message).to.equal('Post not found');
+    });
+  });
+
+  describe('PUT /api/posts/:id', function () {
+  this.timeout(TIMEOUT);
+
+  let postId;
+  before(async () => {
+    const response = await request(app)
+      .post('/api/posts')
+      .send({ title: 'Test Post', content: 'Test Content' });
+
+    postId = response.body.postId;
+  });
+
+  it('should update a post and return the number of affected rows', async () => {
+    const updatedPost = {title: 'Updated Post', content: 'Updated Content'};
+    const response = await request(app)
+      .put(`/api/posts/${postId}`)
+      .send(updatedPost);
+
+    expect(response.status).to.equal(200);
+    expect(response.body.message).to.equal('Post updated');
+    expect(response.body.affectedRows).to.equal(1);
+  });
+
+    it('should return 404 when updating a non-existent post', async () => {
+      const postId = 999;
+      const updatedPost = {title: 'Updated Post', content: 'Updated Content'};
+      const response = await request(app)
+          .put(`/api/posts/${postId}`)
+          .send(updatedPost);
+
+      expect(response.status).to.equal(404);
+      expect(response.body.message).to.equal('Post not found');
+    });
+  });
+
+  describe('DELETE /api/posts/:id', function () {
+  this.timeout(TIMEOUT);
+
+  let postId;
+  before(async () => {
+    const response = await request(app)
+      .post('/api/posts')
+      .send({ title: 'Test Post', content: 'Test Content' });
+
+    postId = response.body.postId;
+  });
+
+  it('should delete a post and return the number of affected rows', async () => {
+    const response = await request(app).delete(`/api/posts/${postId}`);
+
+    expect(response.status).to.equal(200);
+    expect(response.body.message).to.equal('Post deleted');
+    expect(response.body.affectedRows).to.equal(1);
+  });
+
+    it('should return 404 when deleting a non-existent post', async () => {
+      const postId = 999;
+      const response = await request(app).delete(`/api/posts/${postId}`);
+      expect(response.status).to.equal(404);
+      expect(response.body.message).to.equal('Post not found');
+    });
+  });
+});
+
+
+```
+
+
 
 ____________
 ____________
@@ -3216,7 +3604,99 @@ ____________
 
 ________________________
 # 20 app $$ test part4
+_____________
+_____________
+_____________
+# Домашнее задание
 
+
+# Задача 1
+
+`Post.js`, `Post.css`: компонент отдельного поста и его стили.\
+
+
+```js
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import './Post.css';
+
+const Post = () => {
+  const [post, setPost] = useState(null);
+  const { postId } = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/posts/${postId}`);
+        const data = await response.json();
+
+        if (response.ok) {
+          setPost(data.post);
+        } else {
+          alert(`Ошибка загрузки поста: ${data.message}`);
+        }
+      } catch (error) {
+        console.error('Ошибка при загрузке поста:', error);
+        alert('Ошибка загрузки поста. Пожалуйста, попробуйте еще раз.');
+      }
+    };
+
+    fetchPost();
+  }, [postId]);
+
+  if (!post) {
+    return <div>Загрузка поста...</div>;
+  }
+
+  return (
+    <div className="post">
+      <h2 className="post__title">{post.title}</h2>
+      <p className="post__content">{post.content}</p>
+      <button className="post__back-btn" onClick={() => navigate(-1)}>Назад</button>
+    </div>
+  );
+};
+
+export default Post;
+
+```
+
+```css
+.post {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.post__title {
+  margin: 0 0 1rem;
+}
+
+.post__content {
+  margin: 0 0 1rem;
+  text-align: justify;
+}
+
+.post__back-btn {
+  padding: 0.5rem;
+  font-size: 1rem;
+  background-color: #ccc;
+  color: #000;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.post__back-btn:hover {
+  background-color: #999;
+}
+
+```
 ____________
 ____________
 ____________
@@ -3225,3 +3705,9 @@ ____________
 
 ________________________
 # 21 app $$ test part5
+_______________
+_______________
+
+# Домашнее задание
+
+Запустите клинет на 3000 порту и сервер на 5000 порту
